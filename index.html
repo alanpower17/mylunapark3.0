@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MyLunaPark 🎡</title>
+
+  <!-- PWA Meta -->
+  <meta name="theme-color" content="#020617" />
+  <meta name="description" content="Coupon esclusivi nei migliori luna park italiani" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="MyLunaPark" />
+  <link rel="manifest" href="manifest.json" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: "#020617",
+            amber: "#FFBF00",
+            neon: "#00FFFF",
+            card: "#0f172a"
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+
+  <!-- Leaflet CSS (Mappa) -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.css" />
+
+  <!-- Firebase SDK (compat - versione browser) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- CSS personalizzato -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/map.css">
+</head>
+<body class="bg-primary text-amber font-sans min-h-screen">
+
+  <!-- ===== SPLASH SCREEN ===== -->
+  <div id="splashScreen" class="fixed inset-0 bg-primary flex flex-col items-center justify-center z-[999] transition-opacity duration-500">
+    <div class="flex flex-col items-center gap-4 animate-pulse">
+      <span class="text-7xl">🎡</span>
+      <h1 class="text-amber font-extrabold text-3xl tracking-widest">MyLunaPark</h1>
+      <p class="text-gray-500 text-sm">Caricamento in corso...</p>
+      <div class="w-40 h-1 bg-gray-800 rounded-full overflow-hidden mt-2">
+        <div id="splashBar" class="h-full bg-amber rounded-full transition-all duration-300" style="width:0%"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav id="navbar" class="flex justify-between items-center px-4 py-3 bg-card shadow-xl sticky top-0 z-50 border-b border-amber/20">
+    <div class="flex items-center gap-3 cursor-pointer" onclick="navigateTo('home')">
+      <img src="https://i.postimg.cc/s2MQPtHH/logo.png"
+           onerror="this.style.display='none'; document.getElementById('logoText').style.display='flex'"
+           class="h-9" alt="MyLunaPark Logo" />
+      <span id="logoText" class="hidden text-amber font-extrabold text-xl tracking-wide">🎡 MyLunaPark</span>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button onclick="navigateTo('home')" class="text-amber/70 hover:text-amber transition text-sm hidden sm:block">
+        <i class="fas fa-home mr-1"></i>Home
+      </button>
+
+      <!-- Bottone utente loggato -->
+      <div id="navUserMenu" class="hidden items-center gap-3">
+        <span id="navUserName" class="text-sm text-neon font-semibold hidden sm:block"></span>
+        <button onclick="navigateTo('profile')" class="text-amber/70 hover:text-amber transition text-sm">
+          <i class="fas fa-user"></i>
+        </button>
+        <button onclick="logoutUser()" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded-lg transition">
+          <i class="fas fa-sign-out-alt mr-1"></i>Esci
+        </button>
+      </div>
+
+      <!-- Bottone non loggato -->
+      <div id="navGuestMenu" class="flex items-center gap-2">
+        <button onclick="navigateTo('login')" class="bg-amber text-black text-sm font-bold px-4 py-1.5 rounded-lg hover:bg-amber/80 transition">
+          <i class="fas fa-sign-in-alt mr-1"></i>Accedi
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== OFFLINE BANNER ===== -->
+  <div id="offlineBanner" class="offline-banner">
+    <i class="fas fa-wifi-slash mr-2"></i>Sei offline — le funzioni di base sono disponibili
+  </div>
+
+  <!-- ===== AREA PRINCIPALE ===== -->
+  <main id="mainContent" class="max-w-2xl mx-auto px-4 py-6 pb-24">
+    <!-- Contenuto iniettato dinamicamente da app.js -->
+  </main>
+
+  <!-- ===== BOTTOM NAV (Mobile) ===== -->
+  <nav id="bottomNav" class="fixed bottom-0 left-0 right-0 bg-card border-t border-amber/20 flex justify-around items-center py-2 z-50">
+    <button onclick="navigateTo('home')" class="bottom-nav-btn flex flex-col items-center gap-1 text-amber/60 hover:text-amber transition text-xs" id="btnHome">
+      <i class="fas fa-home text-lg"></i>Home
+    </button>
+    <button onclick="navigateTo('search')" class="bottom-nav-btn flex flex-col items-center gap-1 text-amber/60 hover:text-amber transition text-xs" id="btnSearch">
+      <i class="fas fa-search text-lg"></i>Cerca
+    </button>
+    <button onclick="navigateTo('favorites')" class="bottom-nav-btn flex flex-col items-center gap-1 text-amber/60 hover:text-amber transition text-xs" id="btnFavorites">
+      <i class="fas fa-heart text-lg"></i>Preferiti
+    </button>
+    <button onclick="navigateTo('profile')" class="bottom-nav-btn flex flex-col items-center gap-1 text-amber/60 hover:text-amber transition text-xs" id="btnProfile">
+      <i class="fas fa-user text-lg"></i>Profilo
+    </button>
+    <button onclick="navigateTo('map')" class="bottom-nav-btn flex flex-col items-center gap-1 text-amber/60 hover:text-amber transition text-xs" id="btnMap">
+      <i class="fas fa-map text-lg"></i>Mappa
+    </button>
+  </nav>
+
+  <!-- ===== TOAST NOTIFICATION ===== -->
+  <div id="toastContainer" class="fixed bottom-20 left-1/2 transform -translate-x-1/2 z-[100] flex flex-col gap-2 pointer-events-none">
+  </div>
+
+  <!-- ===== MODALE GLOBALE ===== -->
+  <div id="globalModal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center z-[90] px-4">
+    <div class="bg-card rounded-2xl p-6 w-full max-w-sm border border-amber/20 shadow-2xl">
+      <div id="globalModalContent"></div>
+    </div>
+  </div>
+
+  <!-- ===== LOADING OVERLAY ===== -->
+  <div id="loadingOverlay" class="hidden fixed inset-0 bg-primary/80 flex items-center justify-center z-[80]">
+    <div class="flex flex-col items-center gap-4">
+      <div class="w-12 h-12 border-4 border-amber border-t-transparent rounded-full animate-spin"></div>
+      <p class="text-amber text-sm font-medium">Caricamento...</p>
+    </div>
+  </div>
+
+  <!-- Librerie esterne -->
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <!-- JS Modules -->
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/parks.js"></script>
+  <script src="js/coupons.js"></script>
+  <script src="js/sponsors.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/qr.js"></script>
+  <script src="js/app.js"></script>
+
+  <!-- PWA Service Worker -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').catch(() => {});
+      });
+    }
+
+    // ---- OFFLINE DETECTION ----
+    function updateOnlineStatus() {
+      const banner = document.getElementById('offlineBanner');
+      if (banner) banner.classList.toggle('show', !navigator.onLine);
+    }
+    window.addEventListener('online',  updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+
+    // ---- PWA INSTALL PROMPT ----
+    let deferredPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+
+      // Mostra banner dopo 3 secondi
+      setTimeout(() => {
+        if (!localStorage.getItem('pwa-dismissed')) {
+          showPWABanner();
+        }
+      }, 3000);
+    });
+
+    function showPWABanner() {
+      const existing = document.getElementById('pwaBanner');
+      if (existing) return;
+
+      const banner = document.createElement('div');
+      banner.id = 'pwaBanner';
+      banner.className = 'pwa-banner';
+      banner.innerHTML = `
+        <div class="pwa-icon">🎡</div>
+        <div class="pwa-text">
+          <p class="pwa-title">Installa MyLunaPark</p>
+          <p class="pwa-desc">Accesso rapido dai tuoi preferiti</p>
+        </div>
+        <button onclick="installPWA()" class="btn-primary text-xs px-3 py-2">Installa</button>
+        <button onclick="dismissPWA()" class="text-gray-500 text-lg ml-1 leading-none">&times;</button>
+      `;
+      document.body.appendChild(banner);
+    }
+
+    function installPWA() {
+      if (!deferredPrompt) return;
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((result) => {
+        if (result.outcome === 'accepted') {
+          localStorage.setItem('pwa-dismissed', '1');
+        }
+        deferredPrompt = null;
+        dismissPWA();
+      });
+    }
+
+    function dismissPWA() {
+      localStorage.setItem('pwa-dismissed', '1');
+      document.getElementById('pwaBanner')?.remove();
+    }
+  </script>
+</body>
+</html>

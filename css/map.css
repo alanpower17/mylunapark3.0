@@ -1,0 +1,165 @@
+/* ============================================================
+   MyLunaPark - Map CSS
+   Stili per la mappa Leaflet personalizzata
+   ============================================================ */
+
+/* ---- CONTAINER MAPPA ---- */
+#mapContainer {
+  height: 420px;
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid rgba(255, 191, 0, 0.2);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  position: relative;
+  z-index: 1;
+}
+
+/* ---- MAPPA SFONDO ---- */
+.leaflet-container {
+  background: #0f172a;
+  font-family: 'Inter', sans-serif;
+}
+
+/* ---- TILE LAYER (dark) ---- */
+.leaflet-tile {
+  filter: brightness(0.6) saturate(0.4) hue-rotate(200deg);
+}
+
+/* ---- POPUP MARKER ---- */
+.leaflet-popup-content-wrapper {
+  background: #0f172a !important;
+  color: #e2e8f0 !important;
+  border: 1px solid rgba(255, 191, 0, 0.3) !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+  padding: 0 !important;
+}
+.leaflet-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 200px;
+}
+.leaflet-popup-tip {
+  background: #0f172a !important;
+}
+.leaflet-popup-close-button {
+  color: #FFBF00 !important;
+  font-size: 1.2rem !important;
+  top: 8px !important;
+  right: 10px !important;
+}
+
+/* ---- POPUP CONTENUTO ---- */
+.map-popup {
+  padding: 0.875rem;
+}
+.map-popup .popup-nome {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #FFBF00;
+  margin-bottom: 0.15rem;
+}
+.map-popup .popup-citta {
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-bottom: 0.5rem;
+}
+.map-popup .popup-distance {
+  font-size: 0.7rem;
+  color: #00FFFF;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.map-popup .popup-btn {
+  display: block;
+  width: 100%;
+  padding: 0.45rem 0.75rem;
+  background: #FFBF00;
+  color: #020617;
+  border: none;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.15s;
+}
+.map-popup .popup-btn:hover { background: #e6ab00; }
+
+/* ---- MARCATORE PERSONALIZZATO ---- */
+.custom-marker {
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFBF00;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+.custom-marker-inner {
+  transform: rotate(45deg);
+  font-size: 1rem;
+}
+.custom-marker.favorite {
+  background: #FFBF00;
+  border-color: #ff8c00;
+}
+.custom-marker.normal {
+  background: #0f172a;
+}
+.custom-marker.user-pos {
+  background: #00FFFF;
+  border-color: #00b3b3;
+  animation: pulse-marker 2s infinite;
+}
+
+@keyframes pulse-marker {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(0, 255, 255, 0.4); }
+  50%       { box-shadow: 0 0 0 10px rgba(0, 255, 255, 0); }
+}
+
+/* ---- CONTROLLI MAPPA ---- */
+.leaflet-control-zoom a {
+  background: #0f172a !important;
+  color: #FFBF00 !important;
+  border-color: rgba(255,191,0,0.3) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: #FFBF00 !important;
+  color: #020617 !important;
+}
+.leaflet-control-attribution {
+  background: rgba(2, 6, 23, 0.8) !important;
+  color: #6b7280 !important;
+  font-size: 10px !important;
+}
+.leaflet-control-attribution a { color: #FFBF00 !important; }
+
+/* ---- FILTRO MAPPA ---- */
+.map-filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  margin-bottom: 0.75rem;
+  scrollbar-width: none;
+}
+.map-filter-bar::-webkit-scrollbar { display: none; }
+
+/* ---- INFO BOX MAPPA ---- */
+.map-info-panel {
+  background: #0f172a;
+  border: 1px solid rgba(255,191,0,0.15);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.8rem;
+  color: #9ca3af;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
