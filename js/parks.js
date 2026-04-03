@@ -53,12 +53,13 @@ async function getParkById(id) {
 
 // ---- CREA PARCO (solo organizer/admin) ----
 async function createPark(data) {
-  const docRef = await db.collection("LunaParks").add({
-    ...data,
-    status: "pending",
-    organizerIds: data.organizerIds || [currentUser?.uid],
-    createdAt: Date.now()
-  });
+  const docRef = await db.collection('parks').add({
+  name,
+  city,
+  createdBy: currentUser.uid,
+  status: "pending", // 🔥 NON pubblicato subito
+  createdAt: firebase.firestore.FieldValue.serverTimestamp()
+});
   return { id: docRef.id, ...data };
 }
 
