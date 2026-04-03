@@ -869,6 +869,7 @@ async function renderAdminPage() {
 
   // Caricamento dei parchi in attesa (chiamiamo la funzione corretta)
   const parks = await loadPendingParks();
+  console.log("Parchi in attesa trovati:", parks); //
 
   // COSTRUZIONE HTML UNIFICATA
   // Parte 1: Intestazione e Parchi da approvare
