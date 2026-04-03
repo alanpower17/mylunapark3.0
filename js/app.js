@@ -861,7 +861,17 @@ async function renderAdminPage() {
     main.innerHTML = renderEmptyState("🔒", "Accesso non autorizzato");
     return;
   }
+async function loadPendingParks() {
+  const snapshot = await db.collection('LunaParks')
+    .where('status', '==', 'pending')
+    .get();
 
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+}
+  
   main.innerHTML = `
     <h1 class="section-title"><i class="fas fa-cog text-amber"></i>Pannello Admin</h1>
 
