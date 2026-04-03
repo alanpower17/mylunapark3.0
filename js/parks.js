@@ -77,7 +77,7 @@ async function updatePark(parkId, data) {
 async function getMyParks(uid) {
   try {
     const snap = await db.collection("LunaParks")
-      .where("organizerIds", "array-contains", uid)
+      .where("createdBy", "==", uid)
       .get();
     return snap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch (err) {
