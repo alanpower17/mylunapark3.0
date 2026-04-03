@@ -53,7 +53,7 @@ async function getParkById(id) {
 
 // ---- CREA PARCO (solo organizer/admin) ----
 async function createPark(data) {
-  const docRef = await db.collection('parks').add({
+  const docRef = await db.collection('LunaParks').add({
   name,
   city,
   createdBy: currentUser.uid,
