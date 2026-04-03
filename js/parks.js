@@ -20,7 +20,7 @@ function getDistance(lat1, lon1, lat2, lon2) {
 // ---- GET TUTTI I PARCHI ----
 async function getAllParks() {
   try {
-    const snap = aawait db.collection('LunaParks')
+    const snap = await db.collection('LunaParks')
   .where('status', '==', 'approved')
   .get();
     const parks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
