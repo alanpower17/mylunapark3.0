@@ -852,89 +852,55 @@ function renderProfilePage() {
 }
 
 // ============================================================
+// ============================================================
 //  PAGINA: ADMIN PANEL
 // ============================================================
 async function renderAdminPage() {
   const main = document.getElementById('mainContent');
 
+  // Controllo autorizzazioni Admin
   if (!currentUser || currentUser.role !== 'admin') {
     main.innerHTML = renderEmptyState("🔒", "Accesso non autorizzato");
-    return;
-  }
-  async function renderAdminPage() {
-  if (currentUser.role !== 'admin') {
-    navigateTo('home');
+    // Opzionale: navigateTo('home');
     return;
   }
 
   showLoading(true);
 
-  const parks = await getPendingParks();
+  // Caricamento dei parchi in attesa (chiamiamo la funzione corretta)
+  const parks = await loadPendingParks();
 
+  // COSTRUZIONE HTML UNIFICATA
+  // Parte 1: Intestazione e Parchi da approvare
   let html = `
-    <h2 class="text-xl font-bold mb-4">Parchi da approvare</h2>
+    <h1 class="section-title"><i class="fas fa-cog text-amber"></i>Pannello Admin</h1>
+
+    <div class="admin-section">
+      <h2 class="text-xl font-bold mb-4">Parchi da approvare</h2>
   `;
 
   if (parks.length === 0) {
     html += `<p>Nessun parco in attesa</p>`;
-  }
-
-  main.innerhtml += parks.map(p => `
-    <div class="bg-card p-4 rounded-lg mb-3">
-      <h3 class="font-bold">${p.name || p.nome}</h3>
-      <p class="text-sm text-gray-400">${p.city || p.citta}</p>
-
-      <div class="flex gap-2 mt-3">
-        <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-3 py-1 rounded">
-          Approva
-        </button>
-
-        <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-3 py-1 rounded">
-          Rifiuta
-        </button>
+  } else {
+    html += parks.map(p => `
+      <div class="bg-card p-4 rounded-lg mb-3">
+        <h3 class="font-bold">${p.name || p.nome}</h3>
+        <p class="text-sm text-gray-400">${p.city || p.citta}</p>
+        <div class="flex gap-2 mt-3">
+          <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-3 py-1 rounded">
+            Approva
+          </button>
+          <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-3 py-1 rounded">
+            Rifiuta
+          </button>
+        </div>
       </div>
-    </div>
-  `).join("");
+    `).join("");
+  }
+  html += `</div>`; // Chiudi sezione parchi
 
-  document.getElementById("mainContent").innerHTML = html;
-
-  showLoading(false);
-}
-  async function approveParkUI(id) {
-  await approvePark(id);
-  showToast("Parco approvato!", "success");
-  renderAdminPage();
-}
-
-async function rejectParkUI(id) {
-  await rejectPark(id);
-  showToast("Parco rifiutato", "error");
-  renderAdminPage();
-}
-async function loadPendingParks() {
-  const snapshot = await db.collection('LunaParks')
-    .where('status', '==', 'pending')
-    .get();
-
-  return snapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data()
-  }));
-}
-  async function approvePark(id) {
-  await db.collection('LunaParks').doc(id).update({
-    status: "approved"
-  });
-}
-  async function rejectPark(id) {
-  await db.collection('LunaParks').doc(id).update({
-    status: "rejected"
-  });
-}
-  main.innerHTML = `
-    <h1 class="section-title"><i class="fas fa-cog text-amber"></i>Pannello Admin</h1>
-
-    <!-- Sezione: Crea Sponsor -->
+  // Parte 2: Aggiungiamo in coda il resto del Pannello (Sponsor e Utenti)
+  html += `
     <div class="admin-section">
       <h2><i class="fas fa-ad"></i>Crea Nuovo Sponsor</h2>
       <div class="space-y-3">
@@ -964,7 +930,6 @@ async function loadPendingParks() {
       </div>
     </div>
 
-    <!-- Lista sponsor -->
     <div class="admin-section">
       <h2><i class="fas fa-list"></i>Sponsor Attivi</h2>
       <div id="sponsorList">
@@ -973,7 +938,6 @@ async function loadPendingParks() {
       </div>
     </div>
 
-    <!-- Gestione utenti -->
     <div class="admin-section">
       <h2><i class="fas fa-users"></i>Utenti Registrati</h2>
       <div id="usersList">
@@ -982,13 +946,15 @@ async function loadPendingParks() {
       </div>
     </div>
 
-    <!-- Link statistiche -->
     <button class="btn-neon w-full justify-center flex items-center gap-2 mt-2" onclick="navigateTo('admin-stats')">
       <i class="fas fa-chart-bar"></i>Vedi Statistiche Sponsor
     </button>
   `;
 
-  // Carica sponsor
+  // Assegniamo TUTTO l'HTML in una volta sola
+  main.innerHTML = html;
+
+  // Carica e inietta sponsor
   const sponsors = await getAllSponsors();
   const spList = document.getElementById('sponsorList');
   if (spList) {
@@ -1014,7 +980,7 @@ async function loadPendingParks() {
     }
   }
 
-  // Carica utenti
+  // Carica e inietta utenti
   try {
     const users = await getAllUsers();
     const usersEl = document.getElementById('usersList');
@@ -1038,6 +1004,47 @@ async function loadPendingParks() {
   } catch (err) {
     document.getElementById('usersList').innerHTML = `<p class="text-xs text-gray-500">Errore caricamento utenti</p>`;
   }
+
+  showLoading(false);
+}
+
+// ============================================================
+//  FUNZIONI GLOBALI DI SUPPORTO (Devono stare fuori dal render)
+// ============================================================
+
+async function approveParkUI(id) {
+  await approvePark(id);
+  showToast("Parco approvato!", "success");
+  renderAdminPage(); // Ricarica la pagina per aggiornare la lista
+}
+
+async function rejectParkUI(id) {
+  await rejectPark(id);
+  showToast("Parco rifiutato", "error");
+  renderAdminPage();
+}
+
+async function loadPendingParks() {
+  const snapshot = await db.collection('LunaParks')
+    .where('status', '==', 'pending')
+    .get();
+
+  return snapshot.docs.map(doc => ({
+    id: doc.id,
+    ...doc.data()
+  }));
+}
+
+async function approvePark(id) {
+  await db.collection('LunaParks').doc(id).update({
+    status: "approved"
+  });
+}
+
+async function rejectPark(id) {
+  await db.collection('LunaParks').doc(id).update({
+    status: "rejected"
+  });
 }
 
 async function handleCreateSponsor() {
@@ -1086,7 +1093,6 @@ async function handleSetRole(uid, role) {
     showToast("Errore aggiornamento ruolo", "error");
   }
 }
-
 // ============================================================
 //  PAGINA: STATISTICHE SPONSOR (ADMIN) con Chart.js
 // ============================================================
