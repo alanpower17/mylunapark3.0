@@ -879,7 +879,7 @@ async function renderAdminPage() {
     html += `<p>Nessun parco in attesa</p>`;
   }
 
-  html += parks.map(p => `
+  main.innerhtml += parks.map(p => `
     <div class="bg-card p-4 rounded-lg mb-3">
       <h3 class="font-bold">${p.name || p.nome}</h3>
       <p class="text-sm text-gray-400">${p.city || p.citta}</p>
