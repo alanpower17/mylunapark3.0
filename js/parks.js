@@ -91,9 +91,9 @@ function filterParks(parks, searchTerm) {
   if (!searchTerm) return parks;
   const q = searchTerm.toLowerCase().trim();
   return parks.filter(p =>
-    (p.nome  || '').toLowerCase().includes(q) ||
-    (p.citta || '').toLowerCase().includes(q) ||
-    (p.descrizione || '').toLowerCase().includes(q)
+    (p.name  || '').toLowerCase().includes(q) ||
+    (p.city || '').toLowerCase().includes(q) ||
+    (p.description || '').toLowerCase().includes(q)
   );
 }
 
