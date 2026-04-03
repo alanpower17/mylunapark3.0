@@ -861,6 +861,56 @@ async function renderAdminPage() {
     main.innerHTML = renderEmptyState("🔒", "Accesso non autorizzato");
     return;
   }
+  async function renderAdminPage() {
+  if (currentUser.role !== 'admin') {
+    navigateTo('home');
+    return;
+  }
+
+  showLoading(true);
+
+  const parks = await getPendingParks();
+
+  let html = `
+    <h2 class="text-xl font-bold mb-4">Parchi da approvare</h2>
+  `;
+
+  if (parks.length === 0) {
+    html += `<p>Nessun parco in attesa</p>`;
+  }
+
+  html += parks.map(p => `
+    <div class="bg-card p-4 rounded-lg mb-3">
+      <h3 class="font-bold">${p.name || p.nome}</h3>
+      <p class="text-sm text-gray-400">${p.city || p.citta}</p>
+
+      <div class="flex gap-2 mt-3">
+        <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-3 py-1 rounded">
+          Approva
+        </button>
+
+        <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-3 py-1 rounded">
+          Rifiuta
+        </button>
+      </div>
+    </div>
+  `).join("");
+
+  document.getElementById("mainContent").innerHTML = html;
+
+  showLoading(false);
+}
+  async function approveParkUI(id) {
+  await approvePark(id);
+  showToast("Parco approvato!", "success");
+  renderAdminPage();
+}
+
+async function rejectParkUI(id) {
+  await rejectPark(id);
+  showToast("Parco rifiutato", "error");
+  renderAdminPage();
+}
 async function loadPendingParks() {
   const snapshot = await db.collection('LunaParks')
     .where('status', '==', 'pending')
