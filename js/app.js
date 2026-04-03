@@ -871,7 +871,16 @@ async function loadPendingParks() {
     ...doc.data()
   }));
 }
-  
+  async function approvePark(id) {
+  await db.collection('LunaParks').doc(id).update({
+    status: "approved"
+  });
+}
+  async function rejectPark(id) {
+  await db.collection('LunaParks').doc(id).update({
+    status: "rejected"
+  });
+}
   main.innerHTML = `
     <h1 class="section-title"><i class="fas fa-cog text-amber"></i>Pannello Admin</h1>
 
