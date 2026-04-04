@@ -2113,7 +2113,7 @@ async function loadRideStats() {
 // ============================================================
 //  AVVIO APP + SPLASH SCREEN
 // ============================================================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', checkAuthState); {
   console.log("🎡 MyLunaPark App avviata!");
 
   // Anima la barra splash
