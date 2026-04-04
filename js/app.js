@@ -1087,13 +1087,13 @@ function renderProfilePage() {
 async function approveParkUI(id) {
   await approvePark(id);
   showToast("Parco approvato!", "success");
-  renderAdminPage(); // Ricarica la pagina per aggiornare la lista
+  renderAdminDashboard(); // Ricarica la pagina per aggiornare la lista
 }
 
 async function rejectParkUI(id) {
   await rejectPark(id);
   showToast("Parco rifiutato", "error");
-  renderAdminPage();
+  renderAdminDashboard();
 }
 
 async function loadPendingParks() {
