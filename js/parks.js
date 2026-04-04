@@ -35,6 +35,13 @@ async function getAllParks() {
     return getDemoParks();
   }
 }
+async function getParksByStatus(status) {
+  const snap = await db.collection('LunaParks')
+    .where('status', '==', status)
+    .get();
+
+  return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+}
 
 // ---- GET SINGOLO PARCO ----
 async function getParkById(id) {
