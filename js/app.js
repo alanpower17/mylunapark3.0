@@ -854,18 +854,6 @@ function renderProfilePage() {
 // ============================================================
 // ============================================================
 //  PAGINA: ADMIN PANEL
-// ============================================================
-async function renderAdminPage() {
-  const main = document.getElementById('mainContent');
-
-  // Controllo autorizzazioni Admin
-  if (!currentUser || currentUser.role !== 'admin') {
-    main.innerHTML = renderEmptyState("🔒", "Accesso non autorizzato");
-    // Opzionale: navigateTo('home');
-    return;
-  }
-
-  showLoading(true);
 
   // Caricamento dei parchi in attesa (chiamiamo la funzione corretta)
  async function renderAdminDashboard(tab = "pending") {
