@@ -1027,7 +1027,7 @@ function renderProfilePage() {
   main.innerHTML = html;
 
  // Carica e inietta sponsor
- try {
+try {
     const sponsors = await getAllSponsors();
     const spList = document.getElementById('sponsorList');
     
@@ -1046,7 +1046,7 @@ function renderProfilePage() {
               <p class="text-xs text-gray-500">Coupon: ${s.couponId || '—'} | Park: ${s.parkId || '—'}</p>
               <a href="${escapeHtml(s.clickURL || '#')}" target="_blank" class="text-neon text-xs">Link ↗</a>
             </div>
-            <button onclick="handleDeleteSponsor('${s.id}')" class="btn-danger text-xs px-2 py-1 hover:scale-105 transition-transform">
+            <button onclick="handleDeleteSponsor('${s.id}')" class="btn-danger text-xs px-2 py-1">
               <i class="fas fa-trash"></i>
             </button>
           </div>
@@ -1055,11 +1055,9 @@ function renderProfilePage() {
     }
   } catch (err) {
     console.error("Errore nel caricamento sponsor:", err);
-    const spList = document.getElementById('sponsorList');
-    if (spList) spList.innerHTML = `<p class="text-xs text-red-500">Impossibile caricare gli sponsor.</p>`;
   }
 
-  showLoading(false); 
+  showLoading(false);
 }
   // Carica e inietta utenti
   try {
