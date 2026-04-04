@@ -1026,31 +1026,38 @@ function renderProfilePage() {
   // Assegniamo TUTTO l'HTML in una volta sola
   main.innerHTML = html;
 
-  // Carica e inietta sponsor
+ // Carica e inietta sponsor
+try {
   const sponsors = await getAllSponsors();
   const spList = document.getElementById('sponsorList');
+  
   if (spList) {
-    if (sponsors.length === 0) {
+    if (!sponsors || sponsors.length === 0) {
       spList.innerHTML = renderEmptyState("📭", "Nessuno sponsor creato");
     } else {
       spList.innerHTML = sponsors.map(s => `
         <div class="flex items-center gap-3 p-3 bg-primary rounded-lg mb-2 border border-amber/10">
           ${s.imageURL
-            ? `<img src="${escapeHtml(s.imageURL)}" class="w-16 h-12 object-cover rounded flex-shrink-0" onerror="this.style.display='none'" />`
+            ? `<img src="${escapeHtml(s.imageURL)}" class="w-16 h-12 object-cover rounded flex-shrink-0" onerror="this.src='https://placehold.co/60x40?text=Err' " />`
             : `<div class="w-16 h-12 bg-gray-800 rounded flex items-center justify-center text-2xl flex-shrink-0">📢</div>`
           }
           <div class="flex-1 min-w-0">
-            <p class="font-semibold text-sm truncate">${escapeHtml(s.name || 'Sponsor')}</p>
+            <p class="font-semibold text-sm truncate">${escapeHtml(s.name || s.nome || 'Sponsor senza nome')}</p>
             <p class="text-xs text-gray-500">Coupon: ${s.couponId || '—'} | Park: ${s.parkId || '—'}</p>
             <a href="${escapeHtml(s.clickURL || '#')}" target="_blank" class="text-neon text-xs">Link ↗</a>
           </div>
-          <button onclick="handleDeleteSponsor('${s.id}')" class="btn-danger text-xs px-2 py-1">
+          <button onclick="handleDeleteSponsor('${s.id}')" class="btn-danger text-xs px-2 py-1 hover:scale-105 transition-transform">
             <i class="fas fa-trash"></i>
           </button>
         </div>
       `).join('');
     }
   }
+} catch (err) {
+  console.error("Errore nel caricamento sponsor:", err);
+  const spList = document.getElementById('sponsorList');
+  if (spList) spList.innerHTML = `<p class="text-xs text-red-500">Impossibile caricare gli sponsor.</p>`;
+}
 
   // Carica e inietta utenti
   try {
