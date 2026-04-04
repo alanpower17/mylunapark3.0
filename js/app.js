@@ -1024,8 +1024,7 @@ function renderProfilePage() {
   `;
 
   // Assegniamo TUTTO l'HTML in una volta sola
-
-
+  main.innerHTML = html;
  // Carica e inietta sponsor
 try {
     const sponsors = await getAllSponsors();
@@ -1086,7 +1085,6 @@ try {
 
   showLoading(false);
 }
-  main.innerHTML = html;
 // ============================================================
 //  FUNZIONI GLOBALI DI SUPPORTO (Devono stare fuori dal render)
 // ============================================================
