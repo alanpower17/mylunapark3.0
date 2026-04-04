@@ -868,6 +868,89 @@ async function renderAdminPage() {
   showLoading(true);
 
   // Caricamento dei parchi in attesa (chiamiamo la funzione corretta)
+  async function renderAdminDashboard(tab = "pending") {
+  if (currentUser.role !== 'admin') {
+    navigateTo('home');
+    return;
+  }
+
+  showLoading(true);
+
+  const [pending, approved, rejected] = await Promise.all([
+    getParksByStatus("pending"),
+    getParksByStatus("approved"),
+    getParksByStatus("rejected")
+  ]);
+
+  let parks = [];
+  if (tab === "pending") parks = pending;
+  if (tab === "approved") parks = approved;
+  if (tab === "rejected") parks = rejected;
+
+  const html = `
+    <h2 class="text-xl font-bold mb-4">Dashboard Admin</h2>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-3 gap-2 mb-4 text-center">
+      <div class="bg-card p-3 rounded">
+        <div class="text-yellow-400 font-bold">${pending.length}</div>
+        <div class="text-xs">Pending</div>
+      </div>
+      <div class="bg-card p-3 rounded">
+        <div class="text-green-400 font-bold">${approved.length}</div>
+        <div class="text-xs">Approvati</div>
+      </div>
+      <div class="bg-card p-3 rounded">
+        <div class="text-red-400 font-bold">${rejected.length}</div>
+        <div class="text-xs">Rifiutati</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="flex gap-2 mb-4">
+      <button onclick="renderAdminDashboard('pending')" class="px-3 py-1 rounded ${tab==='pending'?'bg-yellow-500 text-black':'bg-card'}">Pending</button>
+      <button onclick="renderAdminDashboard('approved')" class="px-3 py-1 rounded ${tab==='approved'?'bg-green-600':'bg-card'}">Approvati</button>
+      <button onclick="renderAdminDashboard('rejected')" class="px-3 py-1 rounded ${tab==='rejected'?'bg-red-600':'bg-card'}">Rifiutati</button>
+    </div>
+
+    <!-- LISTA -->
+    ${parks.length === 0 ? "<p>Nessun risultato</p>" : ""}
+
+    ${parks.map(p => `
+      <div class="bg-card p-4 rounded-lg mb-3 border border-amber/20">
+        <div class="flex justify-between items-center">
+          <div>
+            <h3 class="font-bold">${p.name || p.nome}</h3>
+            <p class="text-sm text-gray-400">${p.city || p.citta}</p>
+          </div>
+
+          <span class="text-xs px-2 py-1 rounded ${
+            p.status === 'pending' ? 'bg-yellow-500 text-black' :
+            p.status === 'approved' ? 'bg-green-600' :
+            'bg-red-600'
+          }">
+            ${p.status}
+          </span>
+        </div>
+
+        ${p.status === 'pending' ? `
+          <div class="flex gap-2 mt-3">
+            <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-3 py-1 rounded">
+              Approva
+            </button>
+            <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-3 py-1 rounded">
+              Rifiuta
+            </button>
+          </div>
+        ` : ""}
+      </div>
+    `).join("")}
+  `;
+
+  document.getElementById("mainContent").innerHTML = html;
+
+  showLoading(false);
+}
   const parks = await loadPendingParks();
   console.log("Parchi in attesa trovati:", parks); //
 
