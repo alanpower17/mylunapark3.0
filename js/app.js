@@ -1025,11 +1025,10 @@ function renderProfilePage() {
 
   // Assegniamo TUTTO l'HTML in una volta sola
   main.innerHTML = html;
- // Carica e inietta sponsor
-try {
+// 2. Carica e inietta SPONSOR
+  try {
     const sponsors = await getAllSponsors();
     const spList = document.getElementById('sponsorList');
-    
     if (spList) {
       if (!sponsors || sponsors.length === 0) {
         spList.innerHTML = renderEmptyState("📭", "Nessuno sponsor creato");
@@ -1056,16 +1055,14 @@ try {
     console.error("Errore nel caricamento sponsor:", err);
   }
 
-  showLoading(false);
-}
-  // Carica e inietta utenti
+  // 3. Carica e inietta UTENTI
   try {
     const users = await getAllUsers();
     const usersEl = document.getElementById('usersList');
     if (usersEl) {
       usersEl.innerHTML = users.map(u => `
         <div class="flex items-center gap-3 p-2 bg-primary rounded-lg mb-2 border border-amber/10">
-          <div class="avatar text-sm">${getInitials(u.name)}</div>
+          <div class="avatar text-sm">${getInitials(u.name || u.email)}</div>
           <div class="flex-1 min-w-0">
             <p class="text-sm font-medium truncate">${escapeHtml(u.name || u.email || '')}</p>
             <p class="text-xs text-gray-500 truncate">${escapeHtml(u.email || '')}</p>
@@ -1080,7 +1077,9 @@ try {
       `).join('');
     }
   } catch (err) {
-    document.getElementById('usersList').innerHTML = `<p class="text-xs text-gray-500">Errore caricamento utenti</p>`;
+    console.error("Errore caricamento utenti:", err);
+    const usersEl = document.getElementById('usersList');
+    if (usersEl) usersEl.innerHTML = `<p class="text-xs text-gray-500">Errore caricamento utenti</p>`;
   }
 
   showLoading(false);
