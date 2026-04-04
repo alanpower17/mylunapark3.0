@@ -868,9 +868,11 @@ async function renderAdminPage() {
   showLoading(true);
 
   // Caricamento dei parchi in attesa (chiamiamo la funzione corretta)
-  async function renderAdminDashboard(tab = "pending") {
-  if (currentUser.role !== 'admin') {
-    navigateTo('home');
+ async function renderAdminDashboard(tab = "pending") {
+  const main = document.getElementById('mainContent');
+
+  if (!currentUser || currentUser.role !== 'admin') {
+    main.innerHTML = renderEmptyState("🔒", "Accesso non autorizzato");
     return;
   }
 
@@ -888,7 +890,7 @@ async function renderAdminPage() {
   if (tab === "rejected") parks = rejected;
 
   const html = `
-    <h2 class="text-xl font-bold mb-4">Dashboard Admin</h2>
+    <h1 class="section-title">👑 Admin Dashboard</h1>
 
     <!-- STATS -->
     <div class="grid grid-cols-3 gap-2 mb-4 text-center">
@@ -905,17 +907,6 @@ async function renderAdminPage() {
         <div class="text-xs">Rifiutati</div>
       </div>
     </div>
-async function approveParkUI(id) {
-  await approvePark(id);
-  showToast("Parco approvato!", "success");
-  renderAdminDashboard();
-}
-
-async function rejectParkUI(id) {
-  await rejectPark(id);
-  showToast("Parco rifiutato", "error");
-  renderAdminDashboard();
-}
 
     <!-- TABS -->
     <div class="flex gap-2 mb-4">
@@ -929,7 +920,7 @@ async function rejectParkUI(id) {
 
     ${parks.map(p => `
       <div class="bg-card p-4 rounded-lg mb-3 border border-amber/20">
-        <div class="flex justify-between items-center">
+        <div class="flex justify-between">
           <div>
             <h3 class="font-bold">${p.name || p.nome}</h3>
             <p class="text-sm text-gray-400">${p.city || p.citta}</p>
@@ -958,12 +949,10 @@ async function rejectParkUI(id) {
     `).join("")}
   `;
 
-  document.getElementById("mainContent").innerHTML = html;
+  main.innerHTML = html;
 
   showLoading(false);
 }
-  const parks = await loadPendingParks();
-  console.log("Parchi in attesa trovati:", parks); //
 
   // COSTRUZIONE HTML UNIFICATA
   // Parte 1: Intestazione e Parchi da approvare
