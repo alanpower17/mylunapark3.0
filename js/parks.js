@@ -62,22 +62,48 @@ async function getParkById(id) {
 
 // ---- CREA PARCO (solo organizer/admin) ----
 async function createPark(data) {
-  const docRef = await db.collection('LunaParks').add({
-    ...data, // 🔥 prende tutto dal form
-    createdBy: currentUser.uid,
-    status: "pending",
-    createdAt: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  return { id: docRef.id, ...data };
+  try {
+    const docRef = await db.collection('LunaParks').add({
+      ...data,
+      createdBy: currentUser.uid,
+      status: "pending", // Attende l'approvazione dell'admin
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    return { id: docRef.id, ...data };
+  } catch (err) {
+    console.error("Errore durante la creazione del parco:", err);
+    throw err;
+  }
 }
 
-// ---- AGGIORNA PARCO ----
-async function updatePark(parkId, data) {
-  await db.collection("LunaParks").doc(parkId).update({
-    ...data,
-    updatedAt: Date.now()
-  });
+// ---- AGGIORNA PARCO (Con controlli Organizzatore/Admin) ----
+async function updatePark(parkId, data, currentUserInfo) {
+  try {
+    const parkRef = db.collection("LunaParks").doc(parkId);
+    const parkSnap = await parkRef.get();
+
+    if (!parkSnap.exists) throw new Error("Parco non trovato");
+    const parkData = parkSnap.data();
+
+    // Logica di validazione: l'admin può modificare tutto.
+    // L'organizzatore può modificare solo i propri parchi GIÀ approvati.
+    const isAdmin = currentUserInfo.isAdmin === true;
+    const isOwner = parkData.createdBy === currentUserInfo.uid;
+    const isApproved = parkData.status === 'approved';
+
+    if (!isAdmin) {
+      if (!isOwner) throw new Error("Non hai i permessi per modificare questo parco.");
+      if (!isApproved) throw new Error("Puoi modificare il parco solo dopo che è stato approvato.");
+    }
+
+    await parkRef.update({
+      ...data,
+      updatedAt: Date.now()
+    });
+  } catch (err) {
+    console.error("Errore in updatePark:", err);
+    throw err;
+  }
 }
 
 // ---- GET PARCHI ORGANIZZATORE ----
@@ -93,7 +119,7 @@ async function getMyParks(uid) {
   }
 }
 
-// ---- CERCA PARCHI (nome/città) ----
+// ---- CERCA PARCHI ----
 function filterParks(parks, searchTerm) {
   if (!searchTerm) return parks;
   const q = searchTerm.toLowerCase().trim();
@@ -107,25 +133,23 @@ function filterParks(parks, searchTerm) {
 // ---- ORDINA PARCHI ----
 function sortParks(parks, userPos) {
   return [...parks].sort((a, b) => {
-    const aFav = isFavorite(a.id);
+    // Nota: isFavorite deve essere passata o importata
+    const aFav = isFavorite(a.id); 
     const bFav = isFavorite(b.id);
 
-    // Preferiti prima
     if (aFav && !bFav) return -1;
     if (!aFav && bFav) return 1;
 
-    // Poi per distanza
     if (userPos && a.lat && a.lon && b.lat && b.lon) {
       const distA = getDistance(userPos.lat, userPos.lon, a.lat, a.lon);
       const distB = getDistance(userPos.lat, userPos.lon, b.lat, b.lon);
       return distA - distB;
     }
 
-    // Infine alfabetico
-    return (a.nome || '').localeCompare(b.nome || '');
+    // Corretto da a.nome ad a.name per coerenza
+    return (a.name || '').localeCompare(b.name || '');
   });
 }
-
 // ---- GEOLOCALIZZAZIONE ----
 function getUserPosition() {
   return new Promise((resolve, reject) => {
@@ -146,8 +170,8 @@ function getDemoParks() {
   return [
     {
       id: "demo_gardaland",
-      nome: "Gardaland",
-      citta: "Castelnuovo del Garda, VR",
+      name: "Gardaland",
+      city: "Castelnuovo del Garda, VR",
       regione: "Veneto",
       descrizione: "Il più grande parco divertimenti d'Italia con oltre 40 attrazioni mozzafiato.",
       image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=250&fit=crop",
@@ -160,8 +184,8 @@ function getDemoParks() {
     },
     {
       id: "demo_mirabilandia",
-      nome: "Mirabilandia",
-      citta: "Ravenna, RA",
+      name: "Mirabilandia",
+      city: "Ravenna, RA",
       regione: "Emilia-Romagna",
       descrizione: "Parco divertimenti con i più alti roller coaster d'Europa.",
       image: "https://images.unsplash.com/photo-1564156280315-1d42b4651629?w=400&h=250&fit=crop",
@@ -174,8 +198,8 @@ function getDemoParks() {
     },
     {
       id: "demo_movieland",
-      nome: "Movieland Park",
-      citta: "Lazise, VR",
+      name: "Movieland Park",
+      city: "Lazise, VR",
       regione: "Veneto",
       descrizione: "Il parco del cinema con spettacoli dal vivo e attrazioni uniche.",
       image: "https://images.unsplash.com/photo-1593671186131-d58817e7dee0?w=400&h=250&fit=crop",
@@ -188,8 +212,8 @@ function getDemoParks() {
     },
     {
       id: "demo_etnaland",
-      nome: "Etnaland",
-      citta: "Belpasso, CT",
+      name: "Etnaland",
+      city: "Belpasso, CT",
       regione: "Sicilia",
       descrizione: "Il più grande parco acquatico e divertimenti del Sud Italia.",
       image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=250&fit=crop",
@@ -202,8 +226,8 @@ function getDemoParks() {
     },
     {
       id: "demo_legoland",
-      nome: "LEGOLAND® Water Park",
-      citta: "Castelnuovo del Garda, VR",
+      name: "LEGOLAND® Water Park",
+      city: "Castelnuovo del Garda, VR",
       regione: "Veneto",
       descrizione: "Parco acquatico per famiglie a tema LEGO con oltre 20 attrazioni.",
       image: "https://images.unsplash.com/photo-1549366021-9f761d450615?w=400&h=250&fit=crop",
@@ -216,8 +240,8 @@ function getDemoParks() {
     },
     {
       id: "demo_europapark",
-      nome: "Rainbow Magicland",
-      citta: "Valmontone, RM",
+      name: "Rainbow Magicland",
+      city: "Valmontone, RM",
       regione: "Lazio",
       descrizione: "Il più grande parco divertimenti del Centro-Sud Italia.",
       image: "https://images.unsplash.com/photo-1568025732844-7b8213b5bdf9?w=400&h=250&fit=crop",
