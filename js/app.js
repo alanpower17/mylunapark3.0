@@ -1137,7 +1137,7 @@ async function handleCreateSponsor() {
   try {
     await createSponsor(data);
     showToast("Sponsor creato con successo! ✅", "success");
-    renderAdminPage();
+    renderAdminDashboard();
   } catch (err) {
     showToast("Errore nella creazione sponsor", "error");
   } finally {
@@ -1151,7 +1151,7 @@ async function handleDeleteSponsor(id) {
   try {
     await deleteSponsor(id);
     showToast("Sponsor eliminato", "info");
-    renderAdminPage();
+   renderAdminDashboard();
   } finally {
     showLoading(false);
   }
