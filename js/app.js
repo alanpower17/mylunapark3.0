@@ -905,6 +905,17 @@ async function renderAdminPage() {
         <div class="text-xs">Rifiutati</div>
       </div>
     </div>
+async function approveParkUI(id) {
+  await approvePark(id);
+  showToast("Parco approvato!", "success");
+  renderAdminDashboard();
+}
+
+async function rejectParkUI(id) {
+  await rejectPark(id);
+  showToast("Parco rifiutato", "error");
+  renderAdminDashboard();
+}
 
     <!-- TABS -->
     <div class="flex gap-2 mb-4">
