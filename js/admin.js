@@ -34,7 +34,10 @@ async function renderAdminPage() {
 async function renderAdminDashboard(tab = "pending") {
   const container = document.getElementById("adminDashboard");
   const search = document.getElementById("adminSearch")?.value?.toLowerCase() || "";
-
+  if (!container || !statsEl) {
+    console.warn("Admin DOM non pronto");
+    return;
+  }
   showLoading(true);
 
   const [pending, approved, rejected] = await Promise.all([
