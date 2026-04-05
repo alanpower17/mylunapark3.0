@@ -201,11 +201,9 @@ async function rejectParkUI(id) {
   showToast("Rifiutato", "error");
   renderAdminDashboard();
 }
-Gestione dei Modal (Finestre a comparsa)
-function openModal(htmlContent) {
-  let modal = document.getElementById('adminModal');
-  
-  // Se il modal non esiste, lo creiamo
+
+// === FUNZIONI DI SUPPORTO ===
+
 function openModal(htmlContent) {
   let modal = document.getElementById('adminModal');
   
@@ -235,14 +233,17 @@ function closeModal() {
 
 async function updatePark(id, data) {
   try {
+    // Utilizziamo l'istanza db (Firestore)
     await db.collection("LunaParks").doc(id).update(data);
   } catch (error) {
-    console.error("Errore aggiornamento:", error);
-    if (typeof showToast === "function") showToast("Errore salvataggio", "error");
+    console.error("Errore database:", error);
+    if (typeof showToast === "function") showToast("Errore nel salvataggio", "error");
   }
 }
 
 function showToast(message, type) {
-  console.log(`[${type.toUpperCase()}] ${message}`);
-  // Se non hai una libreria toast, questo evita errori
+  // Se non hai ancora una libreria per i toast, usiamo un log pulito
+  console.log("Toast [" + type + "]: " + message);
+  
+   alert(message);
 }
