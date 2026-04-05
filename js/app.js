@@ -939,13 +939,6 @@ async function renderAdminDashboard(tab = "pending") {
   showLoading(false);
 }
 
-    <!-- TABS -->
-    <div class="flex gap-2 mb-4">
-      <button onclick="renderAdminDashboard('pending')" class="px-3 py-1 rounded ${tab==='pending'?'bg-yellow-500 text-black':'bg-card'}">Pending</button>
-      <button onclick="renderAdminDashboard('approved')" class="px-3 py-1 rounded ${tab==='approved'?'bg-green-600':'bg-card'}">Approvati</button>
-      <button onclick="renderAdminDashboard('rejected')" class="px-3 py-1 rounded ${tab==='rejected'?'bg-red-600':'bg-card'}">Rifiutati</button>
-    </div>
-
   // COSTRUZIONE HTML UNIFICATA
   // Parte 1: Intestazione e Parchi da approvare
   let html = `
