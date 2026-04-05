@@ -201,3 +201,59 @@ async function rejectParkUI(id) {
   showToast("Rifiutato", "error");
   renderAdminDashboard();
 }
+* Gestione dei Modal (Finestre a comparsa)
+ */
+function openModal(htmlContent) {
+  let modal = document.getElementById('adminModal');
+  
+  // Se il modal non esiste, lo creiamo
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'adminModal';
+    // Classi Tailwind per lo stile
+    modal.className = 'fixed inset-0 bg-black/70 flex items-center justify-center z-[100] p-4';
+    modal.innerHTML = `
+      <div class="bg-gray-900 border border-amber/20 p-6 rounded-lg max-w-lg w-full max-h-[90vh] overflow-y-auto relative shadow-2xl">
+        <button onclick="closeModal()" class="absolute top-2 right-4 text-2xl font-bold text-gray-400 hover:text-white">&times;</button>
+        <div id="modalBody"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
+
+  // Inseriamo il contenuto e lo mostriamo
+  document.getElementById('modalBody').innerHTML = htmlContent;
+  modal.style.display = 'flex'; 
+}
+
+function closeModal() {
+  const modal = document.getElementById('adminModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+}
+
+/**
+ * Utility: Salvataggio su Database
+ */
+async function updatePark(id, data) {
+  try {
+    // Aggiorna il documento su Firestore
+    await db.collection("LunaParks").doc(id).update(data);
+  } catch (error) {
+    console.error("Errore aggiornamento:", error);
+    showToast("Errore durante il salvataggio", "error");
+  }
+}
+
+/**
+ * Utility: Feedback all'utente (Toast)
+ * Se non hai già un sistema di toast, questo userà un semplice alert
+ */
+function showToast(message, type) {
+  // Se hai una funzione showToast globale nel tuo progetto, questa verrà ignorata o sovrascritta.
+  // Altrimenti, ecco un feedback veloce:
+  console.log(`[${type.toUpperCase()}] ${message}`);
+  // Se vuoi un feedback visivo immediato senza librerie esterne:
+  // alert(message); 
+}
