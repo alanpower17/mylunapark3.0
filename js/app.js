@@ -43,9 +43,6 @@ function navigateTo(page, params = {}) {
     case 'profile':
       renderProfilePage();
       break;
-    case 'admin':
-      renderAdminpage();
-      break;
       case 'admin':
       renderAdminDashboard();
       break;
