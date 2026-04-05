@@ -46,6 +46,9 @@ function navigateTo(page, params = {}) {
     case 'admin':
       renderAdminpage();
       break;
+      case 'admin':
+      renderAdminDashboard();
+      break;
     case 'admin-stats':
       renderAdminStatsPage();
       break;
