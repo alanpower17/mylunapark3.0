@@ -201,8 +201,8 @@ async function rejectParkUI(id) {
   showToast("Rifiutato", "error");
   renderAdminDashboard();
 }
-* Gestione dei Modal (Finestre a comparsa)
- */
+Gestione dei Modal (Finestre a comparsa)
+ /
 function openModal(htmlContent) {
   let modal = document.getElementById('adminModal');
   
