@@ -32,112 +32,110 @@ async function renderAdminPage() {
 
 // ===== DASHBOARD =====
 async function renderAdminDashboard(tab = "pending") {
-  const container = document.getElementById("adminDashboard");
-  const search = document.getElementById("adminSearch")?.value?.toLowerCase() || "";
-  if (!container || !statsEl) {
-    console.warn("Admin DOM non pronto");
-    return;
-  }
-  showLoading(true);
+  const container = document.getElementById("adminDashboard");
+  // 1. Definiamo statsEl cercandolo nel DOM
+  const statsEl = document.getElementById("adminStats");
+  const search = document.getElementById("adminSearch")?.value?.toLowerCase() || "";
+  
+  // 2. Ora il controllo di sicurezza funziona. Se mancano gli elementi, si ferma senza errori.
+  if (!container || !statsEl) {
+    console.warn("Admin DOM non pronto");
+    return;
+  }
+  showLoading(true);
 
-  const [pending, approved, rejected] = await Promise.all([
-    getParksByStatus("pending"),
-    getParksByStatus("approved"),
-    getParksByStatus("rejected")
-  ]);
+  const [pending, approved, rejected] = await Promise.all([
+    getParksByStatus("pending"),
+    getParksByStatus("approved"),
+    getParksByStatus("rejected")
+  ]);
 
-  // stats
-  document.getElementById("adminStats").innerHTML = `
-    <div class="bg-card p-3 rounded text-center">
-      <div class="text-yellow-400 font-bold">${pending.length}</div>
-      <div class="text-xs">Pending</div>
-    </div>
-    <div class="bg-card p-3 rounded text-center">
-      <div class="text-green-400 font-bold">${approved.length}</div>
-      <div class="text-xs">Approvati</div>
-    </div>
-    <div class="bg-card p-3 rounded text-center">
-      <div class="text-red-400 font-bold">${rejected.length}</div>
-      <div class="text-xs">Rifiutati</div>
-    </div>
-  `;
+  // 3. Usiamo direttamente la variabile statsEl che abbiamo verificato essere presente
+  statsEl.innerHTML = `
+    <div class="bg-card p-3 rounded text-center">
+      <div class="text-yellow-400 font-bold">${pending.length}</div>
+      <div class="text-xs">Pending</div>
+    </div>
+    <div class="bg-card p-3 rounded text-center">
+      <div class="text-green-400 font-bold">${approved.length}</div>
+      <div class="text-xs">Approvati</div>
+    </div>
+    <div class="bg-card p-3 rounded text-center">
+      <div class="text-red-400 font-bold">${rejected.length}</div>
+      <div class="text-xs">Rifiutati</div>
+    </div>
+  `;
 
-  let parks = [];
-  if (tab === "pending") parks = pending;
-  if (tab === "approved") parks = approved;
-  if (tab === "rejected") parks = rejected;
+  let parks = [];
+  if (tab === "pending") parks = pending;
+  if (tab === "approved") parks = approved;
+  if (tab === "rejected") parks = rejected;
 
-  // filtro ricerca
-  parks = parks.filter(p =>
-    (p.name || p.nome || "").toLowerCase().includes(search) ||
-    (p.city || p.citta || "").toLowerCase().includes(search)
-  );
+  // filtro ricerca
+  parks = parks.filter(p =>
+    (p.name || p.nome || "").toLowerCase().includes(search) ||
+    (p.city || p.citta || "").toLowerCase().includes(search)
+  );
 
-  container.innerHTML = `
-    <!-- TABS -->
-    <div class="flex gap-2 mb-4">
-      <button onclick="renderAdminDashboard('pending')" class="btn-secondary">Pending</button>
-      <button onclick="renderAdminDashboard('approved')" class="btn-secondary">Approvati</button>
-      <button onclick="renderAdminDashboard('rejected')" class="btn-secondary">Rifiutati</button>
-    </div>
+  container.innerHTML = `
+        <div class="flex gap-2 mb-4">
+      <button onclick="renderAdminDashboard('pending')" class="btn-secondary">Pending</button>
+      <button onclick="renderAdminDashboard('approved')" class="btn-secondary">Approvati</button>
+      <button onclick="renderAdminDashboard('rejected')" class="btn-secondary">Rifiutati</button>
+    </div>
 
-    ${parks.length === 0 ? "<p>Nessun risultato</p>" : ""}
+    ${parks.length === 0 ? "<p>Nessun risultato</p>" : ""}
 
-    ${parks.map(p => `
-      <div class="bg-card p-4 rounded mb-3 border border-amber/20">
+    ${parks.map(p => `
+      <div class="bg-card p-4 rounded mb-3 border border-amber/20">
 
-        <!-- HEADER -->
-        <div class="flex gap-3">
+                <div class="flex gap-3">
 
-          <!-- IMG -->
-          <img src="${p.image || ''}" 
-               class="w-20 h-16 object-cover rounded"
-               onerror="this.src='https://placehold.co/80x60?text=No+Img'" />
+                    <img src="${p.image || ''}" 
+               class="w-20 h-16 object-cover rounded"
+               onerror="this.src='https://placehold.co/80x60?text=No+Img'" />
 
-          <!-- INFO -->
-          <div class="flex-1">
-            <h3 class="font-bold">${p.name || p.nome}</h3>
-            <p class="text-xs text-gray-400">${p.city || p.citta}</p>
-          </div>
+                    <div class="flex-1">
+            <h3 class="font-bold">${p.name || p.nome}</h3>
+            <p class="text-xs text-gray-400">${p.city || p.citta}</p>
+          </div>
 
-          <!-- STATUS -->
-          <span class="text-xs px-2 py-1 rounded ${
-            p.status === 'pending' ? 'bg-yellow-500 text-black' :
-            p.status === 'approved' ? 'bg-green-600' :
-            'bg-red-600'
-          }">${p.status}</span>
-        </div>
+                    <span class="text-xs px-2 py-1 rounded ${
+            p.status === 'pending' ? 'bg-yellow-500 text-black' :
+            p.status === 'approved' ? 'bg-green-600' :
+            'bg-red-600'
+          }">${p.status}</span>
+        </div>
 
-        <!-- AZIONI -->
-        <div class="flex gap-2 mt-3 flex-wrap">
+                <div class="flex gap-2 mt-3 flex-wrap">
 
-          <button onclick="previewPark('${p.id}')" class="btn-secondary text-xs">
-            👁️ Preview
-          </button>
+          <button onclick="previewPark('${p.id}')" class="btn-secondary text-xs">
+            👁️ Preview
+          </button>
 
-          <button onclick="editPark('${p.id}')" class="btn-secondary text-xs">
-            ✏️ Modifica
-          </button>
+          <button onclick="editPark('${p.id}')" class="btn-secondary text-xs">
+            ✏️ Modifica
+          </button>
 
-          <button onclick="deleteParkUI('${p.id}')" class="btn-danger text-xs">
-            🗑️ Elimina
-          </button>
+          <button onclick="deleteParkUI('${p.id}')" class="btn-danger text-xs">
+            🗑️ Elimina
+          </button>
 
-          ${p.status === 'pending' ? `
-            <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-2 py-1 text-xs rounded">
-              ✔ Approva
-            </button>
-            <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-2 py-1 text-xs rounded">
-              ✖ Rifiuta
-            </button>
-          ` : ""}
+          ${p.status === 'pending' ? `
+            <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-2 py-1 text-xs rounded">
+              ✔ Approva
+            </button>
+            <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-2 py-1 text-xs rounded">
+              ✖ Rifiuta
+            </button>
+          ` : ""}
 
-        </div>
-      </div>
-    `).join("")}
-  `;
+        </div>
+      </div>
+    `).join("")}
+  `;
 
-  showLoading(false);
+  showLoading(false);
 }
 
 // ===== PREVIEW =====
