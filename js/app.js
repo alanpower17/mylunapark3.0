@@ -1645,17 +1645,27 @@ async function loadRideStats() {
 }
 
 // ============================================================
+// ============================================================
 //  AVVIO APP + SPLASH SCREEN
 // ============================================================
-document.addEventListener('DOMContentLoaded', checkAuthState); {
+document.addEventListener('DOMContentLoaded', () => {
   console.log("🎡 MyLunaPark App avviata!");
 
-  // Anima la barra splash
-  animateSplashBar();
+  // 1. Avvia il controllo dell'utente (se hai la funzione nel file)
+  if (typeof checkAuthState === 'function') {
+    checkAuthState();
+  }
 
-  // Avvia la navigazione iniziale, poi nascondi lo splash
+  // 2. Anima la barra splash
+  if (typeof animateSplashBar === 'function') {
+    animateSplashBar();
+  }
+
+  // 3. Avvia la navigazione iniziale, poi nascondi lo splash
   setTimeout(() => {
     navigateTo('home');
-    setTimeout(hideSplash, 400);
+    if (typeof hideSplash === 'function') {
+      setTimeout(hideSplash, 400);
+    }
   }, 1200);
 });
