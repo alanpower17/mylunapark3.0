@@ -202,7 +202,6 @@ async function rejectParkUI(id) {
   renderAdminDashboard();
 }
 Gestione dei Modal (Finestre a comparsa)
- /
 function openModal(htmlContent) {
   let modal = document.getElementById('adminModal');
   
