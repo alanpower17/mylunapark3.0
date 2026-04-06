@@ -184,7 +184,9 @@ function getDemoParks() {
     {
       id: "demo_gardaland",
       name: "Gardaland",
+      nome: "Gardaland",
       city: "Castelnuovo del Garda, VR",
+      citta: "Castelnuovo del Garda, VR",
       regione: "Veneto",
       descrizione: "Il più grande parco divertimenti d'Italia con oltre 40 attrazioni mozzafiato.",
       image: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&h=250&fit=crop",
@@ -198,7 +200,9 @@ function getDemoParks() {
     {
       id: "demo_mirabilandia",
       name: "Mirabilandia",
+      nome: "Mirabilandia",
       city: "Ravenna, RA",
+       citta: "Ravenna, RA",
       regione: "Emilia-Romagna",
       descrizione: "Parco divertimenti con i più alti roller coaster d'Europa.",
       image: "https://images.unsplash.com/photo-1564156280315-1d42b4651629?w=400&h=250&fit=crop",
@@ -212,7 +216,9 @@ function getDemoParks() {
     {
       id: "demo_movieland",
       name: "Movieland Park",
+      name: "Movieland Park",
       city: "Lazise, VR",
+       citta: "Lazise, VR",
       regione: "Veneto",
       descrizione: "Il parco del cinema con spettacoli dal vivo e attrazioni uniche.",
       image: "https://images.unsplash.com/photo-1593671186131-d58817e7dee0?w=400&h=250&fit=crop",
@@ -226,7 +232,9 @@ function getDemoParks() {
     {
       id: "demo_etnaland",
       name: "Etnaland",
+       nome: "Etnaland"
       city: "Belpasso, CT",
+        citta: "Belpasso, CT",
       regione: "Sicilia",
       descrizione: "Il più grande parco acquatico e divertimenti del Sud Italia.",
       image: "https://images.unsplash.com/photo-1582719508461-905c673771fd?w=400&h=250&fit=crop",
@@ -240,7 +248,9 @@ function getDemoParks() {
     {
       id: "demo_legoland",
       name: "LEGOLAND® Water Park",
+        name: "LEGOLAND® Water Park",
       city: "Castelnuovo del Garda, VR",
+         citta: "Castelnuovo del Garda, VR",
       regione: "Veneto",
       descrizione: "Parco acquatico per famiglie a tema LEGO con oltre 20 attrazioni.",
       image: "https://images.unsplash.com/photo-1549366021-9f761d450615?w=400&h=250&fit=crop",
@@ -253,8 +263,10 @@ function getDemoParks() {
     },
     {
       id: "demo_europapark",
-      name: "Rainbow Magicland",
+        name: "Rainbow Magicland",
+         nome: "Rainbow Magicland",
       city: "Valmontone, RM",
+         citta: "Valmontone, RM",
       regione: "Lazio",
       descrizione: "Il più grande parco divertimenti del Centro-Sud Italia.",
       image: "https://images.unsplash.com/photo-1568025732844-7b8213b5bdf9?w=400&h=250&fit=crop",
