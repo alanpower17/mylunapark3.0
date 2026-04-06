@@ -1,4 +1,3 @@
-
 // ADMIN PRO LEVEL 2
 // ===== PAGINA PRINCIPALE =====
 async function renderAdminPage() {
@@ -86,14 +85,8 @@ async function renderAdminDashboard(tab = "pending") {
 
     ${parks.length === 0 ? "<p>Nessun risultato</p>" : ""}
 
-    ${parks.map(p => {
-
-  const canEdit = canEditPark(p);
-  const isAdmin = currentUser.role === "admin";
-
-  return ``
-     <div class="bg-card p-4 rounded mb-3">
-
+    ${parks.map(p => `
+      <div class="bg-card p-4 rounded mb-3 border border-amber/20">
 
                 <div class="flex gap-3">
 
@@ -112,35 +105,34 @@ async function renderAdminDashboard(tab = "pending") {
             'bg-red-600'
           }">${p.status}</span>
         </div>
-<div class="flex gap-2 mt-3 flex-wrap">
 
-  <button onclick="previewPark('${p.id}')" class="btn-secondary text-xs">
-    👁️ Preview
-  </button>
+                <div class="flex gap-2 mt-3 flex-wrap">
 
-  ${canEdit ? `
-    <button onclick="editPark('${p.id}')" class="btn-secondary text-xs">
-      ✏️ Modifica
-    </button>
+          <button onclick="previewPark('${p.id}')" class="btn-secondary text-xs">
+            👁️ Preview
+          </button>
 
-    <button onclick="deleteParkUI('${p.id}')" class="btn-danger text-xs">
-      🗑️ Elimina
-    </button>
-  ` : ""}
+          <button onclick="editPark('${p.id}')" class="btn-secondary text-xs">
+            ✏️ Modifica
+          </button>
 
-  ${isAdmin && p.status === 'pending' ? `
-    <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-2 py-1 text-xs rounded">
-      ✔ Approva
-    </button>
-    <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-2 py-1 text-xs rounded">
-      ✖ Rifiuta
-    </button>
-  ` : ""}
+          <button onclick="deleteParkUI('${p.id}')" class="btn-danger text-xs">
+            🗑️ Elimina
+          </button>
 
-</div>
+          ${p.status === 'pending' ? `
+            <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-2 py-1 text-xs rounded">
+              ✔ Approva
+            </button>
+            <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-2 py-1 text-xs rounded">
+              ✖ Rifiuta
+            </button>
+          ` : ""}
+
+        </div>
       </div>
-  ;
-}).join("")}
+    `).join("")}
+  `;
 
   showLoading(false);
 }
