@@ -200,11 +200,22 @@ async function editPark(id) {
 }
 async function savePark(id) {
   const data = {
+    // Inviamo sia la versione italiana che inglese per sicurezza, 
+  
     name: document.getElementById("editName").value,
+    nome: document.getElementById("editName").value, 
+    
     city: document.getElementById("editCity").value,
-    image: document.getElementById("editImage").value
+    citta: document.getElementById("editCity").value,
+    
+    image: document.getElementById("editImage").value,
+    
+    status: "approved" 
   };
 
+  await updatePark(id, data);
+  closeModal();
+  if (typeof showToast === "function") showToast("Modifica salvata e pubblicata!", "success");
   await updatePark(id, data);
   closeModal();
   showToast("Salvato!", "success");
