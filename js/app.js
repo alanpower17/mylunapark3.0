@@ -54,6 +54,9 @@ function navigateTo(page, params = {}) {
       break;
     case 'organizer':
       renderOrganizerPage();
+      case "organizer":
+  renderOrganizerDashboard();
+  break;
       break;
     case 'rideowner':
       renderRideOwnerPage();
