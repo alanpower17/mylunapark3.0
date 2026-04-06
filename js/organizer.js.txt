@@ -1,0 +1,170 @@
+/renderOrganizerDashboard/
+async function renderOrganizerDashboard() {
+  const main = document.getElementById("mainContent");
+
+  if (!currentUser) {
+    main.innerHTML = "Non autenticato";
+    return;
+  }
+
+  main.innerHTML = `
+    <h1 class="text-2xl mb-4">🎡 I tuoi Luna Park</h1>
+
+    <!-- FORM CREAZIONE -->
+    <div class="bg-card p-3 rounded mb-4">
+      <input 
+        id="parkName" 
+        placeholder="Nome Luna Park"
+        class="w-full p-2 mb-2"
+      />
+      <button onclick="handleCreatePark()" class="btn-primary w-full">
+        ➕ Crea Parco
+      </button>
+    </div>
+
+    <!-- LISTA -->
+    <div id="myParksList">
+      Caricamento...
+    </div>
+  `;
+
+  loadMyParks();
+}
+
+/load parchi/
+
+async function loadMyParks() {
+  const container = document.getElementById("myParksList");
+
+  const parks = await getMyParks(currentUser.uid);
+
+  if (!parks.length) {
+    container.innerHTML = "<p>Nessun parco creato</p>";
+    return;
+  }
+
+  container.innerHTML = parks.map(p => `
+    <div class="bg-card p-3 rounded mb-3">
+
+      <h2 class="font-bold">${p.nome}</h2>
+
+      <p class="text-sm">
+        Stato: 
+        <span class="
+          ${p.status === 'approved' ? 'text-green-400' : ''}
+          ${p.status === 'pending' ? 'text-yellow-400' : ''}
+          ${p.status === 'rejected' ? 'text-red-400' : ''}
+        ">
+          ${p.status}
+        </span>
+      </p>
+
+      <div class="flex gap-2 mt-2">
+        <button onclick="editPark('${p.id}')" class="btn-secondary text-xs">
+          ✏️ Modifica
+        </button>
+
+        <button onclick="manageCoupons('${p.id}')" class="btn-secondary text-xs">
+          🎟️ Coupon
+        </button>
+      </div>
+
+    </div>
+  `).join("");
+}
+
+/creaparco/
+async function handleCreatePark() {
+  const name = document.getElementById("parkName").value;
+
+  if (!name) {
+    alert("Inserisci nome");
+    return;
+  }
+
+  await createPark({
+    nome: name,
+    organizerIds: [currentUser.uid]
+  });
+
+  alert("Parco inviato per approvazione");
+
+  loadMyParks();
+}
+
+/modifica parco/ 
+async function editPark(id) {
+  const park = await getParkById(id);
+
+  openModal(`
+    <h2 class="text-lg mb-2">Modifica</h2>
+
+    <input id="editName" value="${park.nome}" class="w-full p-2 mb-2"/>
+
+    <button onclick="saveParkEdit('${id}')" class="btn-primary w-full">
+      💾 Salva
+    </button>
+  `);
+}
+
+async function saveParkEdit(id) {
+  const name = document.getElementById("editName").value;
+
+  await updatePark(id, { nome: name });
+
+  closeModal();
+  loadMyParks();
+}
+
+/gestione coupon/ 
+async function manageCoupons(parkId) {
+  const coupons = await getCouponsByPark(parkId);
+
+  openModal(`
+    <h2 class="text-lg mb-2">Coupon</h2>
+
+    <button onclick="addCoupon('${parkId}')" class="btn-primary mb-2">
+      ➕ Nuovo Coupon
+    </button>
+
+    ${coupons.map(c => `
+      <div class="bg-card p-2 mb-2 rounded flex justify-between">
+        <span>${c.nomeAttrazione}</span>
+        <button onclick="deleteCouponUI('${c.id}','${parkId}')" class="text-red-500">
+          ❌
+        </button>
+      </div>
+    `).join("")}
+  `);
+}
+/crea coupon/
+function addCoupon(parkId) {
+  openModal(`
+    <h2 class="text-lg mb-2">Nuovo Coupon</h2>
+
+    <input id="cName" placeholder="Attrazione" class="w-full p-2 mb-2"/>
+    <input id="cDiscount" placeholder="Sconto" class="w-full p-2 mb-2"/>
+
+    <button onclick="saveCoupon('${parkId}')" class="btn-primary w-full">
+      Salva
+    </button>
+  `);
+}
+
+async function saveCoupon(parkId) {
+  const nomeAttrazione = document.getElementById("cName").value;
+  const valoreSconto = document.getElementById("cDiscount").value;
+
+  await createCoupon({
+    nomeAttrazione,
+    valoreSconto,
+    parkId
+  });
+
+  manageCoupons(parkId);
+}
+/elimina coupon/ 
+async function deleteCouponUI(id, parkId) {
+  await deleteCoupon(id);
+  manageCoupons(parkId);
+}
