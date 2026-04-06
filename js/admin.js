@@ -139,14 +139,24 @@ async function renderAdminDashboard(tab = "pending") {
 }
 
 // ===== PREVIEW =====
-async function previewPark(id) {
-  const park = await getParkById(id);
-  
-  // Se per qualche motivo il parco non viene trovato
-  if (!park) {
-    showToast("Errore: dati parco non trovati", "error");
-    return;
+async function getParkById(id) {
+  try {
+    // 1. Prendi il riferimento al documento
+    const doc = await db.collection("LunaParks").doc(id).get();
+    
+    if (doc.exists) {
+      // 2. IMPORTANTE: Devi usare .data() per estrarre i campi!
+      // Usiamo lo spread operator (...) per unire l'ID ai dati
+      return { id: doc.id, ...doc.data() };
+    } else {
+      console.error("Nessun parco trovato con questo ID");
+      return null;
+    }
+  } catch (error) {
+    console.error("Errore durante il recupero del parco:", error);
+    return null;
   }
+}
 
   openModal(`
     <h2 class="text-lg font-bold mb-2">${park.name || park.nome || 'Senza Nome'}</h2>
