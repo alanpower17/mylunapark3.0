@@ -141,32 +141,44 @@ async function renderAdminDashboard(tab = "pending") {
 // ===== PREVIEW =====
 async function previewPark(id) {
   const park = await getParkById(id);
+  
+  // Se per qualche motivo il parco non viene trovato
+  if (!park) {
+    showToast("Errore: dati parco non trovati", "error");
+    return;
+  }
 
   openModal(`
-    <h2 class="text-lg font-bold mb-2">${park.name}</h2>
-    <img src="${park.image}" class="w-full rounded mb-3"/>
-    <p>${park.description || ''}</p>
-    <p class="text-sm text-gray-400 mt-2">${park.city}</p>
+    <h2 class="text-lg font-bold mb-2">${park.name || park.nome || 'Senza Nome'}</h2>
+    <img src="${park.image || 'https://placehold.co/400x300?text=No+Image'}" class="w-full rounded mb-3"/>
+    <p class="text-gray-200">${park.description || park.descrizione || 'Nessuna descrizione disponibile.'}</p>
+    <p class="text-sm text-amber-400 mt-2">📍 ${park.city || park.citta || 'Città non specificata'}</p>
   `);
 }
 
 // ===== EDIT =====
 async function editPark(id) {
   const park = await getParkById(id);
+  
+  if (!park) return;
 
   openModal(`
-    <h2 class="text-lg font-bold mb-3">Modifica Parco</h2>
+    <h2 class="text-lg font-bold mb-3 text-amber-500">Modifica Parco</h2>
 
-    <input id="editName" value="${park.name}" class="input mb-2"/>
-    <input id="editCity" value="${park.city}" class="input mb-2"/>
-    <input id="editImage" value="${park.image}" class="input mb-2"/>
+    <label class="text-xs text-gray-400">Nome Parco</label>
+    <input id="editName" value="${park.name || park.nome || ''}" class="w-full p-2 mb-3 bg-gray-800 border border-gray-700 rounded text-white"/>
+    
+    <label class="text-xs text-gray-400">Città</label>
+    <input id="editCity" value="${park.city || park.citta || ''}" class="w-full p-2 mb-3 bg-gray-800 border border-gray-700 rounded text-white"/>
+    
+    <label class="text-xs text-gray-400">URL Immagine</label>
+    <input id="editImage" value="${park.image || ''}" class="w-full p-2 mb-4 bg-gray-800 border border-gray-700 rounded text-white"/>
 
-    <button onclick="savePark('${id}')" class="btn-primary w-full">
-      💾 Salva
+    <button onclick="savePark('${id}')" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded transition">
+      💾 Salva Modifiche
     </button>
   `);
 }
-
 async function savePark(id) {
   const data = {
     name: document.getElementById("editName").value,
