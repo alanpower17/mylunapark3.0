@@ -86,7 +86,12 @@ async function renderAdminDashboard(tab = "pending") {
 
     ${parks.length === 0 ? "<p>Nessun risultato</p>" : ""}
 
-    ${parks.map(p => `
+    ${parks.map(p => {
+
+  const canEdit = canEditPark(p);
+  const isAdmin = currentUser.role === "admin";
+
+  return ``
       <div class="bg-card p-4 rounded mb-3 border border-amber/20">
 
                 <div class="flex gap-3">
@@ -132,8 +137,8 @@ async function renderAdminDashboard(tab = "pending") {
 
         </div>
       </div>
-    `).join("")}
-  `;
+  ;
+}).join("")}
 
   showLoading(false);
 }
