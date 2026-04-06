@@ -232,7 +232,7 @@ function getDemoParks() {
     {
       id: "demo_etnaland",
       name: "Etnaland",
-       nome: "Etnaland"
+       nome: "Etnaland",
       city: "Belpasso, CT",
         citta: "Belpasso, CT",
       regione: "Sicilia",
