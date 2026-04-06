@@ -92,7 +92,8 @@ async function renderAdminDashboard(tab = "pending") {
   const isAdmin = currentUser.role === "admin";
 
   return ``
-      <div class="bg-card p-4 rounded mb-3 border border-amber/20">
+     <div class="bg-card p-4 rounded mb-3">
+
 
                 <div class="flex gap-3">
 
