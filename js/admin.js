@@ -112,31 +112,32 @@ async function renderAdminDashboard(tab = "pending") {
             'bg-red-600'
           }">${p.status}</span>
         </div>
+<div class="flex gap-2 mt-3 flex-wrap">
 
-                <div class="flex gap-2 mt-3 flex-wrap">
+  <button onclick="previewPark('${p.id}')" class="btn-secondary text-xs">
+    👁️ Preview
+  </button>
 
-          <button onclick="previewPark('${p.id}')" class="btn-secondary text-xs">
-            👁️ Preview
-          </button>
+  ${canEdit ? `
+    <button onclick="editPark('${p.id}')" class="btn-secondary text-xs">
+      ✏️ Modifica
+    </button>
 
-          <button onclick="editPark('${p.id}')" class="btn-secondary text-xs">
-            ✏️ Modifica
-          </button>
+    <button onclick="deleteParkUI('${p.id}')" class="btn-danger text-xs">
+      🗑️ Elimina
+    </button>
+  ` : ""}
 
-          <button onclick="deleteParkUI('${p.id}')" class="btn-danger text-xs">
-            🗑️ Elimina
-          </button>
+  ${isAdmin && p.status === 'pending' ? `
+    <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-2 py-1 text-xs rounded">
+      ✔ Approva
+    </button>
+    <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-2 py-1 text-xs rounded">
+      ✖ Rifiuta
+    </button>
+  ` : ""}
 
-          ${p.status === 'pending' ? `
-            <button onclick="approveParkUI('${p.id}')" class="bg-green-600 px-2 py-1 text-xs rounded">
-              ✔ Approva
-            </button>
-            <button onclick="rejectParkUI('${p.id}')" class="bg-red-600 px-2 py-1 text-xs rounded">
-              ✖ Rifiuta
-            </button>
-          ` : ""}
-
-        </div>
+</div>
       </div>
   ;
 }).join("")}
