@@ -61,6 +61,19 @@ async function getParkById(id) {
 }
 
 // ---- CREA PARCO (solo organizer/admin) ----
+function canEditPark(park) {
+  if (!currentUser) return false;
+
+  // admin può sempre
+  if (currentUser.role === "admin") return true;
+
+  // organizer solo i suoi
+  if (currentUser.role === "organizer" && park.createdBy === currentUser.uid) {
+    return true;
+  }
+
+  return false;
+}
 async function createPark(data) {
   try {
     const docRef = await db.collection('LunaParks').add({
