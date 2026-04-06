@@ -392,7 +392,7 @@ function renderLoginPage(mode = 'login') {
         <div class="form-group">
           <label>Tipo account</label>
           <select id="regRole">
-            <option value="user">👤 Utente (raccoglgo coupon)</option>
+            <option value="user">👤 Parklover (Cliente)</option>
             <option value="organizer">🏟️ Organizzatore Luna Park</option>
             <option value="rideowner">🎠 Gestore Giostra</option>
           </select>
