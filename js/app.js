@@ -827,6 +827,9 @@ function renderProfilePage() {
         </button>
       ` : ''}
       ${currentUser.role === 'admin' ? `
+      <button onclick="renderOrganizerPage()" class="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg shadow transition flex items-center justify-center gap-2">
+  🎪 Passa alla Vista Organizzatore
+</button>
         <button class="btn-primary w-full justify-center" onclick="navigateTo('admin')">
           <i class="fas fa-cog"></i>Pannello Admin
         </button>
