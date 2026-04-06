@@ -10,6 +10,11 @@ async function renderAdminPage() {
 
   main.innerHTML = `
     <h1 class="section-title">👑 Admin PRO</h1>
+     <!-- tasto organizzatore -->
+    <button onclick="renderOrganizerPage()" class="bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-2 rounded font-bold transition shadow-lg">
+        🎪 Vista Organizzatore
+      </button>
+    </div>
 
     <!-- SEARCH -->
     <input 
