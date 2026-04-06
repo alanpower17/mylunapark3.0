@@ -52,9 +52,6 @@ function navigateTo(page, params = {}) {
     case 'admin-stats':
       renderAdminStatsPage();
       break;
-    case 'organizer':
-      renderOrganizerPage();
-       break;
       case "organizer":
   renderOrganizerDashboard();
   break;
